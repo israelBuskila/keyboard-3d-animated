@@ -239,7 +239,6 @@ export default function KeyboardScroll() {
     const containerRef = useRef<HTMLDivElement>(null)
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const imagesRef = useRef<HTMLImageElement[]>([])
-    const bgImageRef = useRef<HTMLImageElement | null>(null)
     const currentFrameRef = useRef<number>(-1)
     const rafRef = useRef<number | null>(null)
     const progressRef = useRef<number>(0)
@@ -273,47 +272,16 @@ export default function KeyboardScroll() {
         canvas.width = w
         canvas.height = h
 
+        // "Cover" fit: fill every pixel, crop edges proportionally
         const imgW = img.naturalWidth
         const imgH = img.naturalHeight
-        const isMobile = w < 1024
+        const scale = Math.max(w / imgW, h / imgH)
+        const drawW = imgW * scale
+        const drawH = imgH * scale
+        const offsetX = (w - drawW) / 2
+        const offsetY = (h - drawH) / 2
 
-        // Draw background filling the entire canvas ("cover")
-        const bgImg = bgImageRef.current
-        if (bgImg && bgImg.complete && bgImg.naturalWidth) {
-            const bgW = bgImg.naturalWidth
-            const bgH = bgImg.naturalHeight
-            const bgScale = Math.max(w / bgW, h / bgH)
-            const drawBgW = bgW * bgScale
-            const drawBgH = bgH * bgScale
-            const bgX = (w - drawBgW) / 2
-            const bgY = (h - drawBgH) / 2
-            ctx.drawImage(bgImg, bgX, bgY, drawBgW, drawBgH)
-        } else {
-            ctx.clearRect(0, 0, w, h)
-            ctx.fillStyle = 'var(--fog, #f2f2f2)'
-            ctx.fillRect(0, 0, w, h)
-        }
-
-        if (isMobile) {
-            // ── Mobile: sharp keyboard (contain, centered) ──────────
-            // Fits the entire frame inside the screen without cropping
-            const containScale = Math.min(w / imgW, h / imgH)
-            const containW = imgW * containScale
-            const containH = imgH * containScale
-            const containX = (w - containW) / 2
-            const containY = (h - containH) / 2
-
-            ctx.drawImage(img, containX, containY, containW, containH)
-        } else {
-            // ── Desktop: standard "cover" fill ────────────────────────────────────
-            const scale = Math.max(w / imgW, h / imgH)
-            const drawW = imgW * scale
-            const drawH = imgH * scale
-            const offsetX = (w - drawW) / 2
-            const offsetY = (h - drawH) / 2
-
-            ctx.drawImage(img, offsetX, offsetY, drawW, drawH)
-        }
+        ctx.drawImage(img, offsetX, offsetY, drawW, drawH)
     }, [])
 
     const scheduleFrame = useCallback((progress: number) => {
@@ -360,36 +328,34 @@ export default function KeyboardScroll() {
     // ── Image preloading ──────────────────────────────────────────────────────
 
     useEffect(() => {
-        let loaded = 0
-        const totalToLoad = TOTAL_FRAMES + 1 // +1 for the static background
         const images: HTMLImageElement[] = []
+        let loaded = 0
 
-        const checkDone = () => {
-            loaded++
-            setLoadedCount(Math.min(loaded, TOTAL_FRAMES))
-            if (loaded === totalToLoad) {
-                setAllLoaded(true)
-                imagesRef.current = images
-                drawFrame(0)
-                currentFrameRef.current = 0
-            }
-        }
-
-        // Preload static background image
-        const bgImg = new Image()
-        bgImg.src = '/background.png'
-        bgImg.onload = () => {
-            bgImageRef.current = bgImg
-            checkDone()
-        }
-        bgImg.onerror = checkDone
-
-        // Preload sequential keyboard frames
         for (let i = 0; i < TOTAL_FRAMES; i++) {
             const img = new Image()
             img.src = getFrameUrl(i)
-            img.onload = checkDone
-            img.onerror = checkDone
+            img.onload = () => {
+                loaded++
+                setLoadedCount(loaded)
+                if (loaded === TOTAL_FRAMES) {
+                    setAllLoaded(true)
+                    // Draw first frame immediately
+                    imagesRef.current = images
+                    drawFrame(0)
+                    currentFrameRef.current = 0
+                }
+            }
+            img.onerror = () => {
+                // Still count as loaded so we don't hang
+                loaded++
+                setLoadedCount(loaded)
+                if (loaded === TOTAL_FRAMES) {
+                    setAllLoaded(true)
+                    imagesRef.current = images
+                    drawFrame(0)
+                    currentFrameRef.current = 0
+                }
+            }
             images.push(img)
         }
 
