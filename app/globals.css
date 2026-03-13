@@ -1,0 +1,157 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --fog: #E8E8E8;
+  --fog-light: #EDEDEE;
+  --fog-dark: #DCDCDC;
+  --text-primary: rgba(0, 0, 0, 0.88);
+  --text-secondary: rgba(0, 0, 0, 0.55);
+  --text-muted: rgba(0, 0, 0, 0.35);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--fog);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
+/* Smooth canvas rendering for photos */
+canvas {
+  image-rendering: auto;
+}
+
+/* Selection color */
+::selection {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+/* Loading animations */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin 1.4s linear infinite;
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s ease-in-out infinite;
+}
+
+/* Nav logo */
+.nav-logo {
+  letter-spacing: -0.04em;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+/* Overlay text styles */
+.overlay-heading {
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--text-primary);
+}
+
+.overlay-subtext {
+  font-size: clamp(0.875rem, 1.5vw, 1.125rem);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: var(--text-secondary);
+  margin-top: 0.75rem;
+}
+
+/* CTA Button */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  background: rgba(0, 0, 0, 0.88);
+  color: #fff;
+  border-radius: 100px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  transition: all 0.25s ease;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  text-decoration: none;
+  margin-top: 2rem;
+}
+
+.btn-primary:hover {
+  background: rgba(0, 0, 0, 0.75);
+  transform: translateY(-1px);
+}
+
+/* Footer */
+.footer-text {
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
