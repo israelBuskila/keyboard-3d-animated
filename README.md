@@ -1,5 +1,7 @@
 # WpDev Keyboard — Scrollytelling Landing Page
 
+![Project Animation Demo](public/video.mov)
+
 A high-end, scroll-driven animation landing page for the **WpDev** mechanical keyboard brand. Built with **Next.js 14**, **Framer Motion**, and **HTML5 Canvas**.
 
 ---
@@ -26,13 +28,13 @@ npm install
 
 ### 2. Add your image frames
 
-Place 120 WebP frames in `public/frames/` with this naming:
+Place 192 JPG frames in `public/frames/` with 5-digit zero-padded naming:
 
 ```
-frame_0_delay-0.04s.webp
-frame_1_delay-0.04s.webp
+00001.jpg
+00002.jpg
 ...
-frame_119_delay-0.04s.webp
+00192.jpg
 ```
 
 See `public/frames/README.md` for full export instructions.
@@ -66,7 +68,7 @@ Open [http://localhost:3000](http://localhost:3000).
 │   └── KeyboardScroll.tsx  # ★ Core scroll animation component
 │
 ├── public/
-│   └── frames/             # 120 WebP frames (you provide)
+│   └── frames/             # 192 JPG frames (you provide)
 │       └── README.md
 │
 └── scripts/
@@ -81,9 +83,9 @@ Open [http://localhost:3000](http://localhost:3000).
 
 2. **useScroll** — Framer Motion tracks scroll progress (0→1) within the container.
 
-3. **Frame mapping** — `progress × 119` gives the current frame index. Clamped and deduplicated to avoid redundant canvas draws.
+3. **Frame mapping** — `progress × 191` gives the current frame index. Clamped and deduplicated to avoid redundant canvas draws.
 
-4. **Canvas draw** — Each frame is drawn with a "contain" fit (full keyboard visible on any screen size). Canvas background is always filled with the fog color first for seamless blending.
+4. **Canvas draw** — Each frame is drawn with a responsive "cover" fit. This dynamically scales the image to completely fill the screen (`Math.max(w / imgW, h / imgH)`) while remaining fully centered. This prevents cropping the primary keyboard animation while perfectly accommodating all mobile screen aspect ratios and resizes!
 
 5. **Story overlays** — 4 text beats fade in/out at specific scroll percentages using interpolated opacity + Y translate.
 
@@ -92,21 +94,17 @@ Open [http://localhost:3000](http://localhost:3000).
 ## Customization
 
 ### Fog color
-If your frames use a different background shade, update `globals.css`:
+If your layout/body background needs to seamlessly bleed with any potential letterboxing on extreme ultrawides, update `globals.css`:
 ```css
 :root {
-  --fog: #E8E8E8; /* ← eyedrop from your frame */
+  --fog: #E8E8E8; /* ← eyedrop out-of-bounds color from your frame */
 }
-```
-And `components/KeyboardScroll.tsx`:
-```typescript
-ctx.fillStyle = '#E8E8E8' // ← same value
 ```
 
 ### Number of frames
 Change `TOTAL_FRAMES` in `components/KeyboardScroll.tsx`:
 ```typescript
-const TOTAL_FRAMES = 120 // ← your frame count
+const TOTAL_FRAMES = 192 // ← your frame count
 ```
 
 ### Story beats

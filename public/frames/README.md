@@ -1,34 +1,26 @@
 # Image Frames Directory
 
-Place your 120 WebP frames here, exported from ezgif-split.
+Place your 192 JPG frames here, exported from a high quality animation sequence.
 
 ## Naming Convention
 
-Files must follow this exact pattern:
+Files must follow a 5-digit zero-padded index, 1-based pattern:
 
 ```
-frame_0_delay-0.04s.webp
-frame_1_delay-0.04s.webp
-frame_2_delay-0.04s.webp
+00001.jpg
+00002.jpg
+00003.jpg
 ...
-frame_119_delay-0.04s.webp
+00192.jpg
 ```
 
 ## How to Generate
 
-1. Take your keyboard animation GIF/video
-2. Upload to [ezgif.com/split](https://ezgif.com/split)
-3. Export as WebP with 0.04s delay
-4. Rename files to match the naming convention above
-5. Drop all 120 files in this `/public/frames/` directory
+1. Take your keyboard 3D animation sequence.
+2. Render as individual high-quality `.jpg` frames.
+3. Keep the file names starting from `00001.jpg` up to the number of frames.
+4. Drop all the files into this `/public/frames/` directory.
 
-## Fog Color Matching
+## Canvas Background
 
-The `KeyboardScroll.tsx` component uses `#E8E8E8` as the canvas background.
-Make sure your frame backgrounds match this fog tone for seamless blending.
-
-If your frames use a slightly different fog shade, update the `ctx.fillStyle` in `components/KeyboardScroll.tsx`:
-
-```typescript
-ctx.fillStyle = '#E8E8E8' // ← change this to match your frames
-```
+The `KeyboardScroll.tsx` component is styled with a responsive "cover" layout, scaling your image naturally according to the screen width vs height (`Math.max(w / imgW, h / imgH)`). By ensuring your .jpg images are high-res and beautifully rendered with an intact margin/safe-zone around your product, no cropping of the core product will be observed on phones or large screens!
